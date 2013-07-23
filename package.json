@@ -1,6 +1,6 @@
 {
   "name": "level-user",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "client side library for moving data over a level-socket",
   "main": "index.js",
   "scripts": {},
@@ -11,7 +11,7 @@
   "author": "max ogden",
   "license": "BSD",
   "dependencies": {
-    "browser-request": "~0.2.1",
+    "browser-request": "git://github.com/maxogden/browser-request.git",
     "websocket-stream": "~0.2.0",
     "persona-id": "0.0.3",
     "level-sublevel": "~4.8.0",
