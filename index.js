@@ -23,9 +23,9 @@ function User(db, options) {
   this.options = options
 }
 
-User.prototype.getSession = function(cb) {
+User.prototype.getProfile = function(cb) {
   var self = this
-  var opts = { withCredentials: true, json: true, url: this.options.baseURL + '/_session' }
+  var opts = { withCredentials: true, json: true, url: this.options.baseURL + '/_profile' }
   request(opts, function(err, resp, profile) {
     if (err) return cb(err, {})
     if (!profile.email) return cb(err, profile)
@@ -39,6 +39,7 @@ User.prototype.remote = function(name) {
   var backend = this.options.baseURL.replace('http:', 'ws:') + '/' + name
   var stream = websocket(backend)
   var db = multilevel.client()
+  stream.on('error', function(e) { console.log('websocket error', e) })
   db.on('data', function(e) { console.log(e) })
   stream.pipe(db.createRpcStream()).pipe(stream)
   return db
