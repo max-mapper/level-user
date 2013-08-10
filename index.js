@@ -19,6 +19,7 @@ module.exports = function(options) {
 }
 
 function User(db, options) {
+  this.options = options
   this.db = db
   this.persona = createPersona()
   this.options = options
@@ -45,8 +46,15 @@ User.prototype.remote = function(name) {
   var backend = this.options.baseURL.replace('http:', 'ws:') + '/' + name
   var stream = websocket(backend)
   var db = multilevel.client()
-  stream.on('error', function(e) { console.log('websocket error', e) })
-  db.on('data', function(e) { console.log(e) })
+  
+  if (this.options.verbose) {
+    db.on('data', function(e) { console.log(e) })
+  }
+  
+  stream.on('error', function(e) {
+    if (this.options.verbose) console.log('websocket error', e)
+  })
+  
   stream.pipe(db.createRpcStream()).pipe(stream)
   return db
 }
@@ -54,9 +62,11 @@ User.prototype.remote = function(name) {
 User.prototype.copy = function(from, to, cb) {
   var read = from.createReadStream({valueEncoding: 'binary'})
   var write = to.createWriteStream({valueEncoding: 'binary'})
-  write.on('data', log)
-  read.on('data', log)
-  function log(c) { console.log(c) }
+  if (this.options.verbose) {
+    write.on('data', log)
+    read.on('data', log)
+    function log(c) { console.log('level-user', c) }
+  }
   read.pipe(write)
   var sent = false
   write.on('close', function() {
